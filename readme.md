@@ -74,6 +74,51 @@ A **loader** in Webpack is a transformation tool that allows Webpack to process 
 
 Loaders are declared under the `module.rules` section in `webpack.config.js`.
 
+🧱 Asset Handling – asset/resource
+
+Webpack 5 provides built-in asset modules to handle files like images, fonts, and other static assets without needing additional loaders like file-loader.
+
+❓ Q: What is asset/resource in Webpack and what does it do?
+
+A:asset/resource is a built-in module type in Webpack 5 that:
+
+✅ Emits the imported file to the output folder (dist/)
+
+✅ Returns a URL string to be used in JavaScript or CSS
+
+✅ Adds a content hash to the filename for caching (e.g., logo.87d3f.png)
+
+✅ Replaces older tools like file-loader
+
+❓ Q: How do I configure asset/resource in webpack.config.js?
+
+A:You use the type field under module.rules, like this:
+
+module.exports = {
+module: {
+rules: [
+{
+test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf|otf)$/i,
+type: 'asset/resource'
+}
+]
+}
+}
+
+✅ This tells Webpack to process matching files as static assets and emit them to dist/.
+
+❌ Q: I got an error: Can't resolve 'asset/resource' — what went wrong?
+
+A:You likely used use instead of type. For example:
+
+use: 'asset/resource' // ❌ Wrong — this causes the error
+
+The correct way is:
+
+type: 'asset/resource' // ✅ Right — Webpack 5 syntax
+
+ℹ️ asset/resource is not a loader. It's a built-in Webpack module type — so use doesn’t apply.
+
 ---
 
 ### 🧐 Babel
