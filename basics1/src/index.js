@@ -1,7 +1,5 @@
 import { greet } from "./utils.js";
 
-
-
 const user = {
   name: 'Chethan',
   preferences: {

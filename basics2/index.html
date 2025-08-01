@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webpack Demo Sum</title>
+    <script src="sum.js" defer></script>
+    <script src="index.js" defer></script>
+    <!-- The above scripts throw errors in the console because they use modern JavaScript features that some browsers do not support directly. -->
+    <script src="./dist/bundle.js" defer></script>
+    <!-- The above script works correctly because it is bundled and transpiled by Webpack, making it compatible with all browsers. -->
+</head>
+<body>
+    <h1>Sum of Two Numbers</h1>
+    <button id="calculateButton">Calculate Sum</button>
+    <p id="result"></p>
+</body>
+</html>
