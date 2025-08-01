@@ -74,50 +74,124 @@ A **loader** in Webpack is a transformation tool that allows Webpack to process 
 
 Loaders are declared under the `module.rules` section in `webpack.config.js`.
 
-🧱 Asset Handling – asset/resource
+---
 
-Webpack 5 provides built-in asset modules to handle files like images, fonts, and other static assets without needing additional loaders like file-loader.
+### 🎨 Asset Loaders (Webpack 5)
 
-❓ Q: What is asset/resource in Webpack and what does it do?
+Asset loaders in Webpack 5 provide flexible ways to handle files like images, fonts, and text. Here are the main types:
 
-A:asset/resource is a built-in module type in Webpack 5 that:
+#### 1. 🎯 `asset/resource`
 
-✅ Emits the imported file to the output folder (dist/)
+Emits the asset as a separate file in the output folder and returns the public URL.
 
-✅ Returns a URL string to be used in JavaScript or CSS
+**Use Case:**
 
-✅ Adds a content hash to the filename for caching (e.g., logo.87d3f.png)
+- Images, fonts, and media files that should be stored separately.
 
-✅ Replaces older tools like file-loader
+**Config:**
 
-❓ Q: How do I configure asset/resource in webpack.config.js?
-
-A:You use the type field under module.rules, like this:
-
-module.exports = {
-module: {
-rules: [
+```js
 {
-test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf|otf)$/i,
-type: 'asset/resource'
+  test: /\.(png|jpg|woff2?|ttf|eot)$/i,
+  type: 'asset/resource'
 }
-]
+```
+
+**Output:**
+
+- File is emitted to `dist/` with a hashed filename.
+- JS import returns a URL string you can use.
+
+> ❗ **Common Mistake:**
+>
+> Using `use` instead of `type`:
+>
+> ```js
+> use: "asset/resource"; // ❌ Incorrect
+> type: "asset/resource"; // ✅ Correct
+> ```
+
+---
+
+#### 2. 🧵 `asset/inline`
+
+Inlines the asset content as a Base64-encoded string into the JS bundle.
+
+**Use Case:**
+
+- Tiny assets like icons or fonts that benefit from inlining (fewer HTTP requests).
+
+**Config:**
+
+```js
+{
+  test: /\.svg$/i,
+  type: 'asset/inline'
 }
+```
+
+**Output:**
+
+```js
+const icon = "data:image/svg+xml;base64,...";
+```
+
+- Directly usable in `<img src={icon}>`
+
+---
+
+#### 3. 📜 `asset/source`
+
+Imports the raw source of a file as a string.
+
+**Use Case:**
+
+- SVGs, markdown, or text files where you need the file contents inside JS.
+
+**Config:**
+
+```js
+{
+  test: /\.txt$/i,
+  type: 'asset/source'
 }
+```
 
-✅ This tells Webpack to process matching files as static assets and emit them to dist/.
+**Output:**
 
-❌ Q: I got an error: Can't resolve 'asset/resource' — what went wrong?
+```js
+import text from "./note.txt";
+console.log(text); // Logs file contents
+```
 
-A:You likely used use instead of type. For example:
+---
 
-use: 'asset/resource' // ❌ Wrong — this causes the error
+#### 4. 🧠 `asset` (Smart Auto Mode)
 
-The correct way is:
+Automatically selects between `asset/resource` and `asset/inline` based on file size.
 
-type: 'asset/resource' // ✅ Right — Webpack 5 syntax
+**Use Case:**
 
-ℹ️ asset/resource is not a loader. It's a built-in Webpack module type — so use doesn’t apply.
+- General-purpose image loading with performance control.
+
+**Config:**
+
+```js
+{
+  test: /\.png$/i,
+  type: 'asset',
+  parser: {
+    dataUrlCondition: {
+      maxSize: 4 * 1024 // 4kb
+    }
+  }
+}
+```
+
+**Behavior:**
+
+- Files < 4kb → inlined as Base64
+- Files ≥ 4kb → emitted as separate file
 
 ---
 
