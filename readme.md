@@ -54,12 +54,25 @@ project-root/
 
 ### 🔌 Loaders
 
-Loaders help Webpack understand **non-JS files** (like `.css`, `.html`, `.png`, `.svg`, `.scss`, `.jsx`, etc.)
+#### ❓ What is a Loader?
 
-Examples:
+A **loader** in Webpack is a transformation tool that allows Webpack to process **non-JavaScript files** (like CSS, images, fonts, HTML, or even modern JS).
 
-- `css-loader` — allows importing CSS
-- `babel-loader` — connects Babel to Webpack to transpile modern JS
+> Webpack only understands JS/JSON. Loaders tell Webpack how to **convert other file types into valid modules** it can include in the bundle.
+
+#### 🔍 Purpose of Loaders
+
+| Loader           | Purpose                                                                 |
+| ---------------- | ----------------------------------------------------------------------- |
+| `css-loader`     | Lets you import `.css` files into your JS modules                       |
+| `style-loader`   | Injects the imported CSS into the `<style>` tag inside the browser DOM  |
+| `babel-loader`   | Connects Babel to Webpack to transpile modern JS syntax                 |
+| `file-loader`    | Emits files (images, fonts, etc.) to output folder and returns the path |
+| `url-loader`     | Same as file-loader but can inline files as base64 URLs                 |
+| `html-loader`    | Allows importing `.html` files as strings into JS                       |
+| `asset/resource` | Native Webpack 5 way to handle files without file-loader                |
+
+Loaders are declared under the `module.rules` section in `webpack.config.js`.
 
 ---
 
@@ -128,6 +141,8 @@ You have 2 options:
 
 > 💬 **Q: Why does Webpack expect a `.js` file as entry, not `.html`?** > **A:** Because Webpack bundles _JavaScript modules_, not HTML. `index.html` is the container, but `index.js` is the starting point of the app logic.
 
+> 💬 **Q: I used `index.html` as the entry point in `webpack.config.js` and got an error — why?** > **A:** Webpack expects the entry point to be JavaScript. Using an HTML file will throw a parse error unless processed by an appropriate loader.
+
 ### 🧠 Babel & Modern JS
 
 > 💬 **Q: I wrote modern JS (like optional chaining). It failed in the browser but worked in Node. Why?** > **A:** Node (with `"type": "module"` or `.mjs`) supports many modern features directly. But the browser may not, especially if it's older or strict. That's why Babel is needed for compatibility.
@@ -138,74 +153,29 @@ You have 2 options:
 
 > 💬 **Q: I removed Babel loader and used modern JS. Build worked, but browser gave syntax error. Why?** > **A:** Because Webpack **only bundles** — it doesn’t convert JS. You need Babel to make the syntax compatible. Without it, the browser crashes at runtime if it can't understand the code.
 
-**Q: I used `import` and `export` in my JS files, didn’t configure Babel, but it still worked in the browser. How is that possible?**
+> 💬 **Q: I used `import` and `export` in my JS files, didn’t configure Babel, but it still worked in the browser. How is that possible?** > **A:** Because **Webpack understands `import/export`** and internally converts it into a custom module format (`__webpack_require__`). That’s why you don’t need Babel just for modules.
 
-**A:**  
-That’s because **Webpack handles ES module syntax (`import`/`export`) automatically**, even without Babel. Here's how:
+> 💬 **Q: I created a project using `import/export` (ES6) without Babel and it worked — how?** > **A:** Webpack itself handles `import`/`export` syntax and converts it to its internal module system. But it does **not** transpile newer JavaScript features — that's Babel’s job.
 
-- Webpack starts at the entry file (`./index.js`)
-- It builds a dependency graph and **bundles all imported files**
-- It **converts `import/export` into its own internal module system**
-- The final bundle (`bundle.js`) contains browser-compatible JavaScript — no raw ES module syntax
+> 💬 **Q: What does the `title` and `template` in `HtmlWebpackPlugin` do?** > **A:**
+>
+> - `title`: Sets the `<title>` tag in the generated HTML
+> - `template`: Uses a custom HTML file (`src/template.html`) as a base instead of auto-generating a blank page
 
----
+> 💬 **Q: Then how does my React app work even without Webpack or Babel?** > **A:** If you're using **Create React App (CRA)**, you're using a package called `react-scripts`. It wraps Webpack, Babel, and many other tools. You don’t see the configs, but they’re used under the hood.
 
-**Q: But I thought browsers don’t support `import/export` in normal scripts?**
+> 💬 **Q: What is `react-scripts`?** > **A:** It’s a prebuilt config used by CRA to hide complexity. It includes Webpack, Babel, ESLint, Jest, and more. You can eject it with `npm run eject` if you want full control.
 
-**A:**  
-Correct! Browsers only support `import/export` inside `<script type="module">`.  
-But Webpack rewrites these statements into a custom module format, so the browser never sees them. That's why it works fine even with a regular `<script src="bundle.js">`.
+### 🧑‍🏫 CSS Loader Doubt
 
----
-
-**Q: So does Webpack transpile modern JavaScript like `?.`, `??`, or JSX?**
-
-**A:**  
-❌ No. Webpack **does not transpile syntax** — it only bundles files and resolves imports.  
-To convert newer syntax into older JavaScript, you need **Babel** with presets like `@babel/preset-env`.
-
----
-
-**Q: Then how does my React app work even without Webpack or Babel? I never configured them manually — what's happening behind the scenes?**
-
-**A:**  
-React apps created using **Create React App (CRA)** rely on a package called `react-scripts`. This package includes:
-
-- ✅ Webpack (for bundling)
-- ✅ Babel (for transpiling JSX and modern JS)
-- ✅ ESLint (for code linting)
-- ✅ Jest (for testing)
-- ✅ A development server with hot reload
-
-When you run `npm start`, CRA runs `react-scripts start`, which internally configures and runs Webpack and Babel — even though you don’t see any config files yourself.
-
-This is why React apps work "out of the box" without manual Webpack setup.
-
----
-
-**Q: What is `react-scripts`?**
-
-**A:**  
-`react-scripts` is part of the CRA toolchain and includes all the necessary configs. It hides:
-
-- `webpack.config.js`
-- `.babelrc`
-- `.eslintrc`
-- And more…
-
-So you can focus on writing code instead of setting up tooling.
-
-If you want full control, you can:
-
-- Eject with `npm run eject`
-- Or use a custom Webpack setup
+> 💬 **Q: What happens if I use only `css-loader` without `style-loader`?** > **A:** Your build will work, but styles won’t show up in the browser. `css-loader` parses the CSS file into JS. `style-loader` is needed to inject that CSS into the DOM. Without it, no visual style will be applied.
 
 ---
 
 ## 📚 Coming Next
 
 - [ ] HtmlWebpackPlugin: using a custom template
-- [ ] CSS + style-loader
+- [x] CSS + style-loader (done)
 - [ ] File loader (for fonts, images)
 - [ ] Dev server + hot reload
 - [ ] Code splitting & optimization
