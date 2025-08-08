@@ -39,6 +39,13 @@ module.exports = {
                         maxSize:  2 * 1024 * 1024 
                     }
                 }
+            },
+            {
+                test :/\.(ttf)$/i,
+                type: 'asset/resource',
+                generator:{
+                    filename:'fonts/[name]-test-[ext]'
+                }
             }
         ]
     },

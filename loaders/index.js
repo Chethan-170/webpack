@@ -39,3 +39,7 @@ jpgImage2.height = '200';
 jpgImage2.width = '200';
 jpgImage2.alt = 'JPG Image 2';
 document.body.appendChild(jpgImage2);
+// adding a paragraph to display the text content
+const paragraph = document.createElement('p');
+paragraph.textContent = 'This is a paragraph demonstrating the use of CSS and various asset loaders in Webpack.';
+document.body.appendChild(paragraph);

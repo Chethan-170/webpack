@@ -291,6 +291,173 @@ You have 2 options:
 
 ---
 
+### 🎨 Fonts in Webpack
+
+#### ✅ What This Lesson Covers
+
+- What font formats exist and which to use
+- How to load local fonts with Webpack
+- When and why to use `asset/resource`
+- What happens when you don’t configure anything
+- Real-world Q&A and debugging notes
+
+---
+
+#### 📦 What Font Formats Can Webpack Handle?
+
+| Format | Extension | Use Case                              |
+| ------ | --------- | ------------------------------------- |
+| WOFF   | .woff     | Web standard                          |
+| WOFF2  | .woff2    | Optimized for web — preferred         |
+| TTF    | .ttf      | TrueType Font (older but still works) |
+| EOT    | .eot      | Used mostly for Internet Explorer     |
+| OTF    | .otf      | Less common, extended format          |
+
+---
+
+#### 🧠 Q&A Style Learnings
+
+**❓Q: How does Webpack handle fonts? Do we need a loader?**
+
+🔥 **A:** In Webpack 5, no special loader is needed! Webpack uses its Asset Modules system to detect files like `.woff2` and automatically uses:
+
+```js
+type: "asset/resource";
+```
+
+That means:
+
+- It copies the font file to `dist/`
+- Replaces the `url(...)` in your CSS with the final path
+
+**❓Q: What if I didn’t configure anything — but my font still loaded? How?!**
+
+😲 **Surprise!** Webpack did the work behind the scenes.
+
+Here's what happened:
+
+You wrote CSS:
+
+```css
+@font-face {
+  font-family: "MyFont";
+  src: url("./assets/fonts/my-font.woff2");
+}
+```
+
+You imported CSS in JS:
+
+```js
+import "./styles.css";
+```
+
+Webpack magic:
+
+- 🧠 `css-loader` reads the `url()` → tells Webpack: “this is a dependency!”
+- 🛠️ Webpack checks the file extension `.woff2`
+- 🧞 Webpack says: “I don’t see a special rule… I’ll just use `asset/resource`.”
+- 📂 Webpack copies the file to `dist/` and fixes the URL in CSS
+- ✅ You didn’t do anything. It just worked.
+
+**❓Q: Should I still add a rule in webpack.config.js?**
+
+🧩 **Yes, if you want control.**
+
+For example:
+
+```js
+{
+  test: /\.(woff|woff2|eot|ttf|otf)$/i,
+  type: 'asset/resource',
+  generator: {
+    filename: 'fonts/[name][ext]',
+  }
+}
+```
+
+This gives you:
+
+- Organized output (e.g., `dist/fonts/my-font.woff2`)
+- No hash filenames
+- Easier debugging
+
+**❓Q: Why not use asset/inline for fonts?**
+
+📛 Don’t do it (unless the font is tiny)
+
+- Inline fonts are embedded in JS as base64 → increases bundle size
+- Fonts are usually large
+- Let the browser load them separately (using `asset/resource`)
+
+---
+
+#### 💻 Demo Setup Summary
+
+**Project Structure:**
+
+```text
+src/
+├── assets/fonts/my-font.woff2
+├── styles.css
+└── index.js
+
+webpack.config.js
+index.html
+```
+
+**CSS:**
+
+```css
+@font-face {
+  font-family: "MyFont";
+  src: url("./assets/fonts/my-font.woff2") format("woff2");
+}
+body {
+  font-family: "MyFont", sans-serif;
+}
+```
+
+**JS:**
+
+```js
+import "./styles.css";
+```
+
+**Webpack Config (fonts part):**
+
+```js
+{
+  test: /\.(woff|woff2|eot|ttf|otf)$/i,
+  type: 'asset/resource',
+  generator: {
+    filename: 'fonts/[name][ext]',
+  }
+}
+```
+
+---
+
+#### 🧪 Debugging Checklist
+
+| Problem           | Solution                                      |
+| ----------------- | --------------------------------------------- |
+| Font doesn’t load | Check path in CSS and dist folder             |
+| Font 404 error    | File wasn’t emitted — maybe missing rule/typo |
+| Wrong font shows  | CSS priority issue or fallback font in use    |
+| File is base64    | You might’ve used asset/inline accidentally   |
+
+---
+
+#### ✅ Summary
+
+| Topic                  | Key Takeaway                                |
+| ---------------------- | ------------------------------------------- |
+| Asset Modules          | Webpack 5 auto-detects font files           |
+| asset/resource         | Best for fonts — emits file to dist/        |
+| generator.filename     | Lets you organize fonts in a folder         |
+| Manual copy not needed | Webpack handles it if CSS refers to it      |
+| Fonts from CDN         | No Webpack needed — just import in CSS/HTML |
+
 ## 📚 Coming Next
 
 - [ ] HtmlWebpackPlugin: using a custom template
