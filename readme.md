@@ -86,6 +86,35 @@ Loaders are declared under the `module.rules` section in `webpack.config.js`.
 
 ---
 
+### 🧑‍🔬 How Loader Chains Work (Execution Order)
+
+When you use multiple loaders for a file, **Webpack executes them from right to left** (or bottom to top if written in a multi-line array). Think of it like a conveyor belt in reverse:
+
+- The file first goes to the last loader in the chain (rightmost in the array).
+- The output from that loader is passed to the loader before it (to the left).
+- This continues until the first loader in the chain gives the final result back to Webpack.
+
+**Example:**
+
+```js
+{
+  test: /\.scss$/,
+  use: [
+    'style-loader',  // 3️⃣ Injects styles into DOM
+    'css-loader',    // 2️⃣ Turns CSS into CommonJS modules
+    'sass-loader'    // 1️⃣ Compiles SCSS to CSS
+  ]
+}
+```
+
+**Execution order for `styles.scss`:**
+
+1. `sass-loader` → SCSS → CSS
+2. `css-loader` → CSS → JS module
+3. `style-loader` → JS module → `<style>` tag in HTML
+
+---
+
 ### �🗂️ Lesson: `assetModuleFilename` & `clean` in Webpack
 
 In this lesson, we learn how to control **output asset paths** and **clean the build directory** before each build.
@@ -221,6 +250,33 @@ Webpack is a powerful bundler that enhances modern web development by providing:
 ---
 
 #### 📁 Basic Project Structure
+
+---
+
+### 🏷️ Webpack Output Placeholders
+
+Webpack uses placeholders (template strings) in options like `output.filename`, `assetModuleFilename`, and loader options to generate unique and descriptive file names. These are replaced at build time.
+
+**Common Webpack Placeholders:**
+
+| Placeholder     | Description                                                                |
+| --------------- | -------------------------------------------------------------------------- |
+| `[name]`        | The original file name (without extension). Ex: logo.png → logo            |
+| `[ext]`         | The original file extension, including the dot. Ex: .png                   |
+| `[path]`        | The original path of the file (relative to context)                        |
+| `[folder]`      | The folder name the asset came from                                        |
+| `[hash]`        | A build-wide hash generated every time Webpack compiles                    |
+| `[chunkhash]`   | A hash for each chunk — changes only when files in that chunk change       |
+| `[contenthash]` | A hash of the file’s content — changes only if that file’s content changes |
+| `[query]`       | The query string from the import/require statement                         |
+| `[id]`          | The numeric ID of the chunk/module                                         |
+| `[runtime]`     | The name of the runtime chunk                                              |
+| `[base]`        | The full original filename + extension (e.g., logo.png)                    |
+
+**Tip:**
+
+- Use `[contenthash]` for long-term caching of assets (file name only changes if content changes).
+- Use `[name]` and `[ext]` for readable output.
 
 ```bash
 project-root/
