@@ -1,0 +1,22 @@
+$divColor : lightblue;
+$textColor : red;
+
+#hello-world-div {
+    background-color: $divColor;
+    color: $textColor;
+    height: 200px;
+    width: 100%;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#hello-world-span{
+    color:$textColor;
+    font-size: 20px;
+    font-weight: italic;
+}
+.unused-class {
+   color: red;
+}
+

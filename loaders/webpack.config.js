@@ -5,7 +5,9 @@ module.exports = {
     entry: './index.js',
     output:{
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
+        assetModuleFilename: 'assets/[hash][ext]',
+        clean:true,
     },
     module: {
         rules: [
@@ -46,6 +48,9 @@ module.exports = {
                 generator:{
                     filename:'fonts/[name]-test-[ext]'
                 }
+            },{
+                test: /\.(scss)$/,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
             }
         ]
     },

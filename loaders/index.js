@@ -1,4 +1,5 @@
-import './assets/style.css';
+import './assets/styles/style.css';
+import './assets/styles/style.scss';
 import pngImg from './assets/hg.png';
 import jpgImg1  from './assets/asset_ic.jpg';
 import jpgImg2 from './assets/4399.jpg';
@@ -43,3 +44,11 @@ document.body.appendChild(jpgImage2);
 const paragraph = document.createElement('p');
 paragraph.textContent = 'This is a paragraph demonstrating the use of CSS and various asset loaders in Webpack.';
 document.body.appendChild(paragraph);
+// adding a div and span to demonstrate dynamic content creation
+const helloWorldDiv = document.createElement('div');
+helloWorldDiv.id = 'hello-world-div';
+document.body.appendChild(helloWorldDiv);
+const spanHelloWorld = document.createElement('span');
+spanHelloWorld.id = 'hello-world-span';
+spanHelloWorld.textContent = 'Hello, World!';
+helloWorldDiv.appendChild(spanHelloWorld);

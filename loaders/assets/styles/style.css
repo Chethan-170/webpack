@@ -1,7 +1,7 @@
 /* src/styles.css */
 @font-face {
   font-family: 'MyCustomFont';
-  src: url('./fonts/mycustomfont.ttf') format('truetype');
+  src: url('../fonts/mycustomfont.ttf') format('truetype');
 }
 body {
   font-family: 'MyCustomFont', sans-serif;

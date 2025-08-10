@@ -10,6 +10,179 @@ This repo documents both **theory** and **hands-on** lessons, including key insi
 
 ## 📆 Basics
 
+### ✅ What This Section Covers
+
+- What Webpack is and why it's used
+- What Webpack can do for your project
+- The basic project structure
+
+---
+
+### 📝 Explanation
+
+Webpack is a **JavaScript module bundler**. It:
+
+- Starts from an entry JS file (`src/index.js`)
+- Follows all `import` and `require()` calls
+- Bundles everything (JS, CSS, images, fonts) into a single/minified output (like `dist/bundle.js`)
+
+But by default:
+
+- ❌ It only understands `.js` files
+- ❌ It does **not** convert modern JS (e.g., `?.`, `async/await`) for old browsers
+
+---
+
+## 🌟 What Webpack Can Do
+
+Webpack is a powerful bundler that enhances modern web development by providing:
+
+1. ✅ **Loading different assets** like JavaScript, CSS, images, fonts, and more using loaders.
+2. ✅ **Building a dependency graph** starting from a single entry file.
+3. ✅ **Optimized production builds** with minification, compression, and tree-shaking.
+4. ✅ **Bundle splitting** for faster loading and lazy loading of features.
+5. ✅ **Hot Module Replacement (HMR)** for instant updates during development.
+6. ✅ **Dead code elimination (tree shaking)** to remove unused code in production.
+7. ✅ **Module Federation** to enable micro frontends by sharing modules across apps (Webpack 5).
+8. ✅ **Caching support** using content hashing to avoid re-downloading unchanged code.
+9. ✅ **Duplicate code elimination** through smart dependency analysis and optimization.
+
+#### � Basic Project Structure
+
+```bash
+project-root/
+├── src/
+│   └── index.js
+├── dist/
+│   └── index.html (optional if using HtmlWebpackPlugin)
+├── webpack.config.js
+├── .babelrc
+└── package.json
+```
+
+---
+
+### 🔌 Loaders
+
+#### ❓ What is a Loader?
+
+A **loader** in Webpack is a transformation tool that allows Webpack to process **non-JavaScript files** (like CSS, images, fonts, HTML, or even modern JS).
+
+> Webpack only understands JS/JSON. Loaders tell Webpack how to **convert other file types into valid modules** it can include in the bundle.
+
+#### 🔍 Purpose of Loaders
+
+| Loader           | Purpose                                                                 |
+| ---------------- | ----------------------------------------------------------------------- |
+| `css-loader`     | Lets you import `.css` files into your JS modules                       |
+| `style-loader`   | Injects the imported CSS into the `<style>` tag inside the browser DOM  |
+| `babel-loader`   | Connects Babel to Webpack to transpile modern JS syntax                 |
+| `file-loader`    | Emits files (images, fonts, etc.) to output folder and returns the path |
+| `url-loader`     | Same as file-loader but can inline files as base64 URLs                 |
+| `html-loader`    | Allows importing `.html` files as strings into JS                       |
+| `asset/resource` | Native Webpack 5 way to handle files without file-loader                |
+
+Loaders are declared under the `module.rules` section in `webpack.config.js`.
+
+---
+
+### �🗂️ Lesson: `assetModuleFilename` & `clean` in Webpack
+
+In this lesson, we learn how to control **output asset paths** and **clean the build directory** before each build.
+
+---
+
+#### 1. `assetModuleFilename`
+
+The `assetModuleFilename` option in `output` tells Webpack **where and how to store asset files** (like images, fonts, videos, etc.) when they're emitted to the `dist` folder.
+
+**Example:**
+
+```js
+output: {
+  filename: 'bundle.js',
+  path: path.resolve(__dirname, 'dist'),
+  assetModuleFilename: 'assets/[hash][ext]'
+}
+```
+
+- `[hash]` – A unique hash based on the file's content. Helps with cache-busting.
+- `[ext]` – The original file extension (.png, .woff, etc.).
+- `assets/` – The folder where the assets will be placed.
+
+So, if you import an image `logo.png`, it could be saved as:
+
+```bash
+dist/assets/4f2a7d9.png
+```
+
+**Separating Images & Fonts**
+
+We can have different output folders for different asset types using rules + `generator`:
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.(png|jpg|jpeg|gif|svg)$/i,
+      type: "asset/resource",
+      generator: {
+        filename: "assets/images/[hash][ext]",
+      },
+    },
+    {
+      test: /\.(woff|woff2|eot|ttf|otf)$/i,
+      type: "asset/resource",
+      generator: {
+        filename: "assets/fonts/[hash][ext]",
+      },
+    },
+  ];
+}
+```
+
+✅ Images go to `assets/images/`
+✅ Fonts go to `assets/fonts/`
+
+> **Q: Why not just use assetModuleFilename globally?**
+>
+> You can, but it applies to all assets. If you want different folders for images, fonts, videos, etc., you use per-rule `generator.filename` instead.
+
+---
+
+#### 2. `clean` in Webpack
+
+When you build repeatedly, the `dist` folder can get cluttered with old unused files.
+
+`clean: true` automatically removes everything in the output folder before each build.
+
+**Example:**
+
+```js
+output: {
+  filename: 'bundle.js',
+  path: path.resolve(__dirname, 'dist'),
+  clean: true
+}
+```
+
+📌 Without `clean`, unused files from old builds stay in `dist`.
+📌 With `clean: true`, your build starts with a fresh, empty folder every time.
+
+---
+
+#### 3. Real-world Q&A
+
+> **Q: What if I have static files in dist that I don’t want to delete?**
+>
+> Then don’t use `clean: true`. Instead, use a copy plugin to move necessary files during each build.
+
+> **Q: Can I have both assetModuleFilename and generator.filename?**
+>
+> Yes. `assetModuleFilename` is the default for all assets, and `generator.filename` can override it for specific file types.
+
+## 📆 Basics
+
 ### ✅ What is Webpack?
 
 Webpack is a **JavaScript module bundler**. It:
@@ -25,6 +198,14 @@ But by default:
 
 ## 🌟 What Webpack Can Do
 
+### ✅ What This Section Covers
+
+- Key features and benefits of using Webpack
+
+---
+
+### 📝 Explanation
+
 Webpack is a powerful bundler that enhances modern web development by providing:
 
 1. ✅ **Loading different assets** like JavaScript, CSS, images, fonts, and more using loaders.
@@ -36,6 +217,8 @@ Webpack is a powerful bundler that enhances modern web development by providing:
 7. ✅ **Module Federation** to enable micro frontends by sharing modules across apps (Webpack 5).
 8. ✅ **Caching support** using content hashing to avoid re-downloading unchanged code.
 9. ✅ **Duplicate code elimination** through smart dependency analysis and optimization.
+
+---
 
 #### 📁 Basic Project Structure
 
