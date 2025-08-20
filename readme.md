@@ -484,10 +484,101 @@ You have 2 options:
 
 1. Manually create `dist/index.html` and link the script
 2. Use **HtmlWebpackPlugin** to:
-
    - Auto-generate `dist/index.html`
    - Inject the bundled script tag (`<script src="bundle.js">`) for you
    - Use a custom HTML template with `template: './src/template.html'`
+
+---
+
+### 📝 HtmlWebpackPlugin – Extra Q&A
+
+#### ❓ If I only specify `index.js` in Webpack, how does it know about my `index.html`?
+
+- Webpack **does not read HTML files directly**.
+- Instead, we use **HtmlWebpackPlugin**:
+  - It generates an `index.html` file (in memory during dev, in `dist/` during build).
+  - It automatically injects `<script>` tags for your Webpack bundles.
+- So, you don’t need to manually link `index.js` in your HTML.
+
+✅ **Analogy:**
+Think of Webpack as a **chef**. You give him your ingredients (JS, CSS, assets).
+He cooks and gives you a dish (`bundle.js`).
+Now, you still need a **plate (HTML)** to serve it.
+
+- You can bring your own plate (**manual HTML**)
+- Or let the chef give you a plate automatically (**HtmlWebpackPlugin**).
+
+---
+
+#### ❓ What if I have multiple HTML pages (like `home.html`, `about.html`, etc.)?
+
+- You can configure **multiple HtmlWebpackPlugin instances**:
+  ```js
+  entry: {
+    home: './src/home.js',
+    about: './src/about.js',
+    contact: './src/contact.js',
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/home.html',
+      filename: 'home.html',
+      chunks: ['home']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/about.html',
+      filename: 'about.html',
+      chunks: ['about']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/contact.html',
+      filename: 'contact.html',
+      chunks: ['contact']
+    }),
+  ]
+  ```
+  Each HTML file will get only the scripts it needs.
+
+---
+
+#### ❓ The keys in entry: { home, about, contact } — are these route names?
+
+No ❌, they are just bundle names (a.k.a chunk names).
+
+**Example:**
+
+```js
+entry: {
+  home: "./src/home.js";
+}
+// Produces a bundle file like home.js or home.[hash].js.
+```
+
+---
+
+#### ❓ If I manually add <script src="index.js"> in HTML, why do I see both index.js and bundle.js in the final build?
+
+Because:
+
+- Webpack still bundles everything into main.js (or [name].js).
+- HtmlWebpackPlugin injects <script src="main.js">.
+- Your manual <script src="index.js"> is still there → duplicate scripts.
+
+✅ Solution: Don’t add script tags manually.
+
+---
+
+#### ❓ In dev mode, if I don’t add <script> manually, how does it load?
+
+Webpack Dev Server:
+
+- Bundles code in memory (not in dist/).
+- HtmlWebpackPlugin creates an in-memory index.html.
+- Auto-injects <script src="main.js">.
+
+So when you visit http://localhost:8080, the browser gets HTML with the right script automatically.
+
+✅ Works the same in production, except files are written to disk.
 
 ---
 
