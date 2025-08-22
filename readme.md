@@ -788,15 +788,94 @@ import "./styles.css";
 | Manual copy not needed | Webpack handles it if CSS refers to it      |
 | Fonts from CDN         | No Webpack needed — just import in CSS/HTML |
 
-## 📚 Coming Next
+---
 
-- [ ] HtmlWebpackPlugin: using a custom template
-- [x] CSS + style-loader (done)
-- [ ] File loader (for fonts, images)
-- [ ] Dev server + hot reload
-- [ ] Code splitting & optimization
-- [ ] Production builds & env variables
-- [ ] Using Webpack with React from scratch
+### � Webpack Dev Server & Hot Module Replacement (HMR)
+
+Webpack provides a powerful development server called **webpack-dev-server** that speeds up your workflow:
+
+- Serves files from memory (not from `dist/` on disk)
+- Auto-refreshes the browser on changes
+- Supports Hot Module Replacement (HMR) for instant updates
+
+**Example config:**
+
+```js
+devServer: {
+  port: 3000,     // custom port
+  open: true,     // auto open browser
+}
+```
+
+Run it with:
+
+```bash
+npx webpack serve
+```
+
+---
+
+#### 🔥 Live Reload vs HMR
+
+- **Live Reload:**
+
+  - Default behavior
+  - When you change a file, Webpack rebuilds and refreshes the entire page
+
+- **HMR (Hot Module Replacement):**
+  - Updates only the changed modules in the browser without a full reload
+  - Preserves state (e.g., form input)
+  - Needs `hot: true` (some versions auto-enable)
+
+```js
+devServer: {
+  hot: true,   // Enable HMR
+}
+```
+
+---
+
+#### 📂 Static Files with `static`
+
+You can serve plain static files (not bundled by Webpack) using the `static` property:
+
+```js
+devServer: {
+  static: {
+    directory: path.join(__dirname, 'public'),
+  },
+  port: 3000,
+}
+```
+
+Files in `public/` are available at:
+
+`http://localhost:3000/file.png`
+
+Useful for things like `robots.txt`, `favicon.ico`, or unprocessed assets.
+
+---
+
+#### 📝 Real Q&A
+
+**Q: Why do we use webpack-dev-server?**
+👉 Because building and refreshing manually is slow. Dev server serves files from memory and refreshes instantly.
+
+**Q: Why does it still update even if hot: false?**
+👉 Because by default Live Reload is enabled. HMR is extra (partial updates).
+
+**Q: What does the static option do?**
+👉 Think of it as a self-service counter 🍴. Webpack bundles JS/CSS (chef’s dish), but you may still need raw files (sauces, napkins) that can be directly served from public/.
+
+---
+
+#### ✅ Analogy
+
+- **Webpack = Chef 👨‍🍳** → cooks JS, CSS, bundles.
+- **Dev Server = Waiter 🍽️** → serves food instantly to you without waiting for packaging.
+- **Live Reload = Waiter brings a new plate every time you add salt.**
+- **HMR = Waiter sprinkles salt directly on your existing dish without replacing it.**
+- **Static = Side table with napkins and water bottles that you can take directly.**
 
 ---
 
